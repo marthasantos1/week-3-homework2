@@ -27,17 +27,29 @@ public class playerscript : MonoBehaviour
 
 
     bool isGrounded = false;
+
+    bool isFacingRight = true;
+
+    //coin manager
+    public CoinManager cm;
    
 
+
+
+    Animator anim;
     void Start()
     {
        rb = GetComponent<Rigidbody2D>(); 
+       anim = GetComponent<Animator>();
     }
 
     // Update is called once per frame
     void Update()
     {
         Move(direction);
+
+        if ((isFacingRight && direction == -1) || (!isFacingRight && direction == 1 ))
+            Flip();
 
      
     }
@@ -52,6 +64,7 @@ public class playerscript : MonoBehaviour
     void Move(float dir)
     {
         rb.linearVelocity = new Vector2(dir * speed, rb.linearVelocity.y);
+        anim.SetBool("isRunning", dir !=0);
     }
 
     void OnJump()
@@ -103,10 +116,25 @@ public class playerscript : MonoBehaviour
     }
 
 
-// start of new code 
+ 
 
+    private void Flip()
+    {
+        isFacingRight = !isFacingRight;
+        Vector3 newLocalScale = transform.localScale;
+        newLocalScale.x *= -1f;
+        transform.localScale = newLocalScale;
 
-   
+    }
+
+   void OnTriggerEnter2D(Collider2D other) 
+   {
+        if (other.gameObject.CompareTag("coin"))
+        {
+            Destroy(other.gameObject);
+        }
+    
+   }
 }
 
 
